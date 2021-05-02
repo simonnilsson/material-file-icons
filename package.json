@@ -1,0 +1,55 @@
+{
+  "name": "material-file-icons",
+  "version": "1.0.0",
+  "description": "Beautiful material style file type icons in a simple react component.",
+  "module": "dist/index.es.js",
+  "main": "dist/index.js",
+  "browser": "dist/index.min.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "react",
+    "file",
+    "icons",
+    "material"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c",
+    "preview": "node scripts/preview.js",
+    "watch": "rollup -cw",
+    "lint": "eslint \"lib/**/*.{ts,tsx}\"",
+    "prepublishOnly": "npm run build"
+  },
+  "author": "Simon Nilsson <simon@nilsson.ml>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/simonnilsson/material-file-icons.git"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.4",
+    "@types/react-dom": "^17.0.3",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "eslint": "^7.25.0",
+    "fs-extra": "^9.1.0",
+    "language-map": "^1.4.0",
+    "material-icon-theme": "github:PKief/vscode-material-icon-theme",
+    "puppeteer": "^9.0.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "rollup": "^2.46.0",
+    "rollup-plugin-delete": "^2.0.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "svgo": "^2.3.0",
+    "typescript": "^4.2.4"
+  },
+  "peerDependencies": {
+    "react": "^16.9.0 || ^17",
+    "react-dom": "^16.9.0 || ^17"
+  }
+}

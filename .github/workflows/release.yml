@@ -1,0 +1,22 @@
+name: release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish-npm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          registry-url: https://registry.npmjs.org/
+      - run: git config --global url."https://github.com/".insteadOf ssh://git@github.com/
+      - run: npm ci
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

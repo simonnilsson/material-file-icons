@@ -1,0 +1,17 @@
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 14
+    - run: git config --global url."https://github.com/".insteadOf ssh://git@github.com/
+    - run: npm ci
+    - run: npm run lint
