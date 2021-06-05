@@ -4,12 +4,7 @@ const puppeteer = require("puppeteer");
 const { FileIcon, getAllIcons } = require('../dist');
 
 async function renderImage() {
-
-  const browser = await puppeteer.launch({
-    defaultViewport: { width: 980, height: 3024 },
-  });
-  const page = await browser.newPage();
-  
+ 
   const icons = getAllIcons()
     .sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)) 
     .map(i => React.createElement('span', { key: i.name, style: { margin: '8px 0', width: 196, height: 32, display: 'inline-block' } }, [
@@ -19,6 +14,11 @@ async function renderImage() {
 
   const html = ReactDOMServer.renderToStaticMarkup(React.createElement(React.Fragment, null, icons));
 
+  const browser = await puppeteer.launch({
+    defaultViewport: { width: 980, height: Math.ceil(icons.length / 5) * 48 },
+  });
+
+  const page = await browser.newPage();
   await page.setContent(html);
   await page.addStyleTag({content: '*{margin:0;padding:0}'});
   

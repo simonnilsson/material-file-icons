@@ -18,7 +18,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c",
-    "preview": "node scripts/preview.js",
+    "preview": "node scripts/preview-render.js",
     "watch": "rollup -cw",
     "lint": "eslint \"lib/**/*.{ts,tsx}\"",
     "prepublishOnly": "npm run build"
