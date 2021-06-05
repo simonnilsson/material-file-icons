@@ -1,6 +1,6 @@
 {
   "name": "material-file-icons",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Beautiful material style file type icons in a simple react component.",
   "module": "dist/index.es.js",
   "main": "dist/index.js",
