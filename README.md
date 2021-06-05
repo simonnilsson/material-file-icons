@@ -4,15 +4,17 @@
 [![build](https://github.com/simonnilsson/material-file-icons/workflows/ci/badge.svg)](https://github.com/simonnilsson/material-file-icons/actions?query=workflow%3Aci+branch%3Amain)
 [![install size](https://packagephobia.com/badge?p=material-file-icons)](https://packagephobia.com/result?p=material-file-icons)
 
-Beautiful material style file type icons in a simple React component.
+Beautiful material style file type icons packaged in a single JavaScript file.
 
 Source of icons is the [Material Icon Theme](https://github.com/PKief/vscode-material-icon-theme) for VS Code. All credit for icon design should go there. This is also the place for placing requests for adding new icons.
 
+> **Version 1.x of this library was React specific, since 2.0 this library is made to be framework agnostic.**
 ## Features
 
+- Zero dependencies.
 - Contains **320** unique icons.
-- Uses **SVG** images that can scale to any dimensions.
 - Can automatically select icon based on file name.
+- Uses **SVG** images that can scale to any dimensions.
 - All icons a bundled in a single file of about **420 kB** minified.
 - Although primarily focused on file types used in software development, other common file types are also included.
 
@@ -22,31 +24,57 @@ Source of icons is the [Material Icon Theme](https://github.com/PKief/vscode-mat
 npm install --save material-file-icons
 ```
 
-## Usage
+## Usage Examples
 
+React:
 ```js
-import { FileIcon, Icon, getIcon, getAllIcons, defaultIcon } from 'material-file-icons';
+import { getIcon } from 'material-file-icons';
 
-// Renders a JS icon
-<FileIcon filename='file.js' />
+function FileIcon({ filename, style, className }) {
+  return <div 
+    style={style}
+    className={className}
+    dangerouslySetInnerHTML={{ __html: getIcon(filename).svg }}
+  />;
+}
 
-// Renders an audio icon with a black background
-<FileIcon icon={getIcon('file.mp3')} style={{ backgroundColor: 'black' }} />
-
-// Renders a blank icon
-<FileIcon />
+export default FileIcon;
 ```
 
-### `FileIcon`
-Component for rendering an icon. By default the icon will scale to fit its container. A **style** or **className** prop can be used customize size or other styling.
+Vue:
+```html
+<template>
+  <div v-html="svg"></div>
+</template>
 
-#### Props
-|Prop name|Type|Description|
-|---|---|---|
-|filename|string?|Select icon automatically using a file name. Should not include file path.|
-|icon|Icon?|Manually specify the icon to use. Has precedence over the filename prop.|
+<script>
+  import { getIcon } from 'material-file-icons';
+  export default {
+    name: "FileIcon",
+    props: ["filename"],
+    computed: {
+      svg: function () {
+        return getIcon(this.filename).svg;
+      }
+    }
+  };
+</script>
+```
 
-All other props are passed to the top `<div />` element.
+Svelte:
+```html
+<script>
+  import { getIcon } from 'material-file-icons';
+  export let filename;
+  $: selectedIcon = getIcon(filename);
+</script>
+
+<div class={$$props.class} style={$$props.style}>
+  {@html selectedIcon.svg}
+</div>
+```
+
+## API
 
 ### `Icon`
 The Icon type definition
@@ -63,7 +91,7 @@ The Icon type definition
 The default `file` icon.
 
 ### `getIcon(filename: string): Icon`
-Returns an icon based on filename input. Can be used as prop to FileIcon or for other purposes.
+Returns an icon based on filename input.
 
 ### `getAllIcons(): Array<Icon>`
 Returns an array of all available icons.

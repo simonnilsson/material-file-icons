@@ -97,7 +97,7 @@ export default function iconDefinitionsResolver() {
                 console.log('Compiled', code.icons.length + 1, 'icons');
 
                 return {
-                  code: 'import React from "react"; export default ' + util.inspect(code, { maxArrayLength: Infinity, depth: Infinity }),
+                  code: 'export default ' + util.inspect(code, { maxArrayLength: Infinity, depth: Infinity }),
                   map: { mappings: '' },
                 }
               }

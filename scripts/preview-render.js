@@ -1,19 +1,17 @@
-const React = require('react');
-const ReactDOMServer = require("react-dom/server");
 const puppeteer = require("puppeteer");
-const { FileIcon, getAllIcons } = require('../dist');
+const { getAllIcons } = require('../dist');
 
 async function renderImage() {
+
+  const icons = getAllIcons().sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
+
+  const html = icons.map(i => `<span style="margin:8px 0px;width:196px;height:32px;display:inline-block;">` + 
+      `<div style="width:32px;height:32px;display:inline-block;">${i.svg}</div>` +
+      `<p style="padding-left:8px;height:32px; width:152px;vertical-align:top;line-height:32px;font-family:Arial;display:inline-block;">${i.name}</p>` +
+      `</span>`
+    )
+    .join('');
  
-  const icons = getAllIcons()
-    .sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)) 
-    .map(i => React.createElement('span', { key: i.name, style: { margin: '8px 0', width: 196, height: 32, display: 'inline-block' } }, [
-      React.createElement(FileIcon, { key: 'icon', icon: i, style: { width: 32, height: 32, display: 'inline-block'  } }, null),
-      React.createElement('p', { key: 'name', style: {  paddingLeft: 8, height: 32, width: 152, verticalAlign: 'top', lineHeight: '32px', fontFamily: 'Arial', display: 'inline-block'  } }, i.name)
-    ]));
-
-  const html = ReactDOMServer.renderToStaticMarkup(React.createElement(React.Fragment, null, icons));
-
   const browser = await puppeteer.launch({
     defaultViewport: { width: 980, height: Math.ceil(icons.length / 5) * 48 },
   });
