@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.2.0] - 2021-08-27
+- 14 new icons
+- Dependency updates
+
 ## [2.1.0] - 2021-06-28
 - 5 new icons
 - Dependency updates

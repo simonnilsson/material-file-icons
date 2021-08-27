@@ -12,10 +12,10 @@ Source of icons is the [Material Icon Theme](https://github.com/PKief/vscode-mat
 ## Features
 
 - Zero dependencies.
-- Contains **325** unique icons.
+- Contains **339** unique icons.
 - Can automatically select icon based on file name.
 - Uses **SVG** images that can scale to any dimensions.
-- All icons a bundled in a single file of about **426 kB** minified.
+- All icons a bundled in a single file of about **438 kB** minified.
 - Although primarily focused on file types used in software development, other common file types are also included.
 
 ## Install

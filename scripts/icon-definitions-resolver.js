@@ -2,7 +2,7 @@ import rollup from 'rollup'
 import typescript from 'rollup-plugin-typescript2'
 import { readFile } from 'fs-extra'
 import util from 'util';
-import { optimize, extendDefaultPlugins } from 'svgo';
+import { optimize } from 'svgo';
 import languageMap from 'language-map';
 
 const SRC_BASE = 'node_modules/material-icon-theme/';
@@ -15,7 +15,15 @@ async function inlineSvg(fileName, prefix) {
   const image = await readFile(fileName);
   const result = optimize(image.toString(), {
     path: fileName,
-    plugins: extendDefaultPlugins([
+    plugins: [
+      { 
+        name: 'preset-default',
+        params: {
+          overrides:  {
+            removeViewBox: false
+          }
+        }
+      },
       { 
         name: 'addAttributesToSVGElement', 
         params: {
@@ -23,11 +31,10 @@ async function inlineSvg(fileName, prefix) {
         } 
       },
       { name: 'prefixIds', active: true, params: { prefix } },
-      { name: 'removeViewBox', active: false },
       'convertStyleToAttrs',
       'removeDimensions',
       'removeStyleElement',
-    ])
+    ]
   });
   return result.data;
 }
