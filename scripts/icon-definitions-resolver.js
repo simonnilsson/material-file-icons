@@ -104,7 +104,7 @@ export default function iconDefinitionsResolver() {
                 console.log('Compiled', code.icons.length + 1, 'icons');
 
                 return {
-                  code: 'export default ' + util.inspect(code, { maxArrayLength: Infinity, depth: Infinity }),
+                  code: 'export default ' + util.inspect(code, { maxArrayLength: Infinity, depth: Infinity, maxStringLength: Infinity }),
                   map: { mappings: '' },
                 }
               }
