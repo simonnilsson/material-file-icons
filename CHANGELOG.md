@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.3.0] - 2022-10-03
+- 35 new icons
+- Dependency updates
+- Fixed issue with build on newer Node.js versions
+
 ## [2.2.0] - 2021-08-27
 - 14 new icons
 - Dependency updates
