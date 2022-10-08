@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 - 3 New icons: **diff**, **typescript** and **php**
 - Complete rework of extension mapping
   - Uses vscode extensions as source instead of language-map, a lot of extensions have been removed and added to various icons!
+- Performance improvements to `getIcon()`
+  - Filename lookup is about 1000x faster than before.
+  - Extension lookup is about 200x faster than before.
+- Added benchmark script
 
 ## [2.3.0] - 2022-10-03
 - 35 new icons
