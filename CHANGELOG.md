@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [2.4.0] - 2022-10-08
 - 3 New icons: **diff**, **typescript** and **php**
 - Complete rework of extension mapping
   - Uses vscode extensions as source instead of language-map, a lot of extensions have been removed and added to various icons!
