@@ -3,7 +3,7 @@ import typescript from 'rollup-plugin-typescript2'
 import { readFile } from 'fs-extra'
 import util from 'util';
 import { optimize } from 'svgo';
-import languageMap from 'language-map';
+import { getLanguages } from './vscode-extensions';
 
 const SRC_BASE = 'node_modules/material-icon-theme/';
 const IMPORT_NAME = 'icon-definitions';
@@ -39,12 +39,41 @@ async function inlineSvg(fileName, prefix) {
   return result.data;
 }
 
-function getLanguageExtensions(lang) {
-  const key = Object.keys(languageMap).find(k => k.toLowerCase() === lang);
-  if (key && languageMap[key].extensions) {
-    return languageMap[key].extensions.map(ext => ext.slice(1)).filter(ext => !usedExtensions.has(ext));
+async function addIcon(output, name, extensions, files) {
+
+  if (!extensions?.length && !files?.length) {
+    return;
   }
-  return [];
+
+  let outputIcon = output.icons.find(i => i.name === name);
+
+  // Add icon to output if new.
+  if (!outputIcon) {
+    outputIcon = {
+      name,
+      svg: await inlineSvg(`${SRC_BASE}/icons/${name}.svg`, name)
+    };
+    output.icons.push(outputIcon);
+  }
+
+  if (extensions?.length) {
+    // Add extensions to output
+    outputIcon.extensions = Array.from(new Set([
+      ...(outputIcon.extensions ? outputIcon.extensions : []), 
+      ...extensions.filter(ext => !usedExtensions.has(ext)),
+    ]));
+
+    // Add used extensions
+    extensions.forEach(ext => usedExtensions.add(ext));
+  }
+
+  if (files?.length) {
+    // Add files to output
+    outputIcon.files = Array.from(new Set([
+      ...(outputIcon.files ? outputIcon.files : []), 
+      ...files,
+    ]));
+  }
 }
 
 export default function iconDefinitionsResolver() {
@@ -57,59 +86,65 @@ export default function iconDefinitionsResolver() {
     },
     async load(id) {
       if (id === FILE_ID) {
+
         const bundle = await rollup.rollup({
-          input: `${SRC_BASE}/src/icons/fileIcons.ts`,
+          input: [
+            `${SRC_BASE}/src/icons/fileIcons.ts`, 
+            `${SRC_BASE}/src/icons/languageIcons.ts`,
+          ],
           plugins: [
             typescript(),
           ]
         });
-        const { output } = await bundle.generate({
+
+        const { output: bundleOutput } = await bundle.generate({
           format: 'es'
         });
-        for (const chunkOrAsset of output) {
+
+        const output = {
+          icons: []
+        };
+
+        for (const chunkOrAsset of bundleOutput) {
           if (chunkOrAsset.type !== 'asset') {
             for (let file in chunkOrAsset.modules) {
               const module = chunkOrAsset.modules[file];
+
               if (module.renderedExports.includes('fileIcons')) {
-                let code = eval2('var IconPack = {}; ' + module.code + ' fileIcons');
+                const fileIcons = eval2('var IconPack = {}; ' + module.code + ' fileIcons');
 
-                code.defaultIcon.svg = await inlineSvg(`${SRC_BASE}/icons/${code.defaultIcon.name}.svg`, code.defaultIcon.name);
-
-                for (let i = code.icons.length - 1; i >= 0; i--) {
-                  if (code.icons[i].enabledFor) {
-                    code.icons.splice(i, 1);
-                  }
-                  else if (code.icons[i].fileExtensions) {                    
-                    code.icons[i].fileExtensions.forEach(ext => usedExtensions.add(ext));
-                  }
+                output.defaultIcon = { 
+                  name: fileIcons.defaultIcon.name,
+                  svg: await inlineSvg(`${SRC_BASE}/icons/${fileIcons.defaultIcon.name}.svg`, fileIcons.defaultIcon.name)
                 }
 
-                for (let icon of code.icons) {                    
-                  const extensions = Array.from(new Set([
-                    ...(icon.fileExtensions ? icon.fileExtensions : []), 
-                    ...getLanguageExtensions(icon.name)
-                  ]));
-                  if (extensions.length > 0) {
-                    icon.extensions = extensions;
+                for (let icon of fileIcons.icons) {                  
+                  // Ignore conditional icons
+                  if (icon.enabledFor) {
+                    continue;
                   }
-                  if (icon.fileNames) {
-                    icon.files = icon.fileNames;
-                  }
-                  delete icon.light;
-                  delete icon.fileExtensions;
-                  delete icon.fileNames;
-                  icon.svg = await inlineSvg(`${SRC_BASE}/icons/${icon.name}.svg`, icon.name);
+                  await addIcon(output, icon.name, icon.fileExtensions, icon.fileNames);
                 }
+              }
 
-                console.log('Compiled', code.icons.length + 1, 'icons');
-
-                return {
-                  code: 'export default ' + util.inspect(code, { maxArrayLength: Infinity, depth: Infinity, maxStringLength: Infinity }),
-                  map: { mappings: '' },
+              if (module.renderedExports.includes('languageIcons')) {
+                let languageIcons = eval2(module.code + ' languageIcons');
+                let vscodeLanguages = await getLanguages();
+                for (let languageIcon of languageIcons) {
+                  let extensions = languageIcon.ids.map(id => Array.from(vscodeLanguages.get(id)?.extensions ?? [])).flat();
+                  let files = languageIcon.ids.map(id => Array.from(vscodeLanguages.get(id)?.filenames ?? [])).flat();                  
+                  await addIcon(output, languageIcon.icon.name, extensions, files);
                 }
               }
             }
           }
+        }
+
+        console.log('Compiled', output.icons.length + 1, 'icons');
+
+        return {
+          code: 'export default ' + util.inspect(output, { maxArrayLength: Infinity, depth: Infinity, maxStringLength: Infinity }),
+          map: { mappings: '' },
         }
       }
     }
